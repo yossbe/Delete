@@ -1,0 +1,110 @@
+*&---------------------------------------------------------------------*
+*&  Include           ZPP_CLASS_ALV_SEL
+*&---------------------------------------------------------------------*
+
+SELECTION-SCREEN BEGIN OF BLOCK bl WITH FRAME TITLE text-001.
+*SELECTION-SCREEN COMMENT /1(40) text-001.     "/=mew line, 1=position, (40) text lenght
+
+SELECT-OPTIONS: so_matnr FOR MARC-MATNR,
+                so_werks FOR MARC-WERKS  OBLIGATORY,
+                so_mtart for mara-mtart,                       "Material Type
+                so_MATKL FOR mara-MATKL,                       "Material Group
+                so_MEINS FOR mara-MEINS,                       "base unit of measure
+                so_dispo FOR MARC-dispo,                       "MRP Controller
+                so_dismm FOR MARC-dismm,                       "MRP type
+                so_MMSTA FOR MARC-MMSTA,                       "Status
+                so_EKGRP FOR MARC-EKGRP,                       "Procument Group
+                so_PLIFZ FOR marc-PLIFZ,                       "Planned Deliv. Time
+                so_BESKZ FOR marc-BESKZ,                       "Procurement type
+                so_EISBE FOR marc-EISBE,                       "Safty Stock
+                so_LVORM FOR MARC-LVORM DEFAULT '',            "Deletion Flag
+                so_PRGRP for PGMI-PRGRP.
+SELECTION-SCREEN END OF BLOCK bl.
+
+
+SELECTION-SCREEN BEGIN OF BLOCK b2 WITH FRAME TITLE text-002.
+SELECT-OPTIONS: so_date FOR mkpf-budat  NO-EXTENSION.  "MDEZ-dat00
+
+PARAMETERS: FILTER_D  like T463-AFIBZ MATCHCODE OBJECT zh_afibz.        "Display Filter
+PARAMETERS: SEL_RULE like T462-ERGBZ  MATCHCODE OBJECT zh_ergbz.        "Selection rule
+PARAMETERS: S_MRP_AR TYPE BERID.                 "
+PARAMETERS: SPER_STR AS CHECKBOX. "storage at plant level
+
+SELECTION-SCREEN END OF BLOCK b2.
+
+
+
+PARAMETERS: p_var LIKE disvariant-variant.
+
+PARAMETERS: p_mb51 LIKE RSVAR-VARIANT .
+
+
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_var.
+  PERFORM get_layout USING p_var.
+
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_mb51.
+  PERFORM variant_inputhelp_f14 USING p_mb51.
+
+*---------------------------------------------------------------------*
+*       FORM VARIANT_INPUTHELP_F14                                    *
+*---------------------------------------------------------------------*
+FORM variant_inputhelp_f14 USING p_variant LIKE RSVAR-VARIANT.
+
+  data: rep like RSVAR-REPORT.
+  rep = 'ZMM_MB51_T'.
+  CALL FUNCTION 'RS_VARIANT_CATALOG'
+    EXPORTING
+      REPORT                     = rep
+*     NEW_TITLE                  = ' '
+*     DYNNR  =
+*     INTERNAL_CALL              = ' '
+*     MASKED = 'X'
+*     VARIANT                    = ' '
+*     POP_UP = ' '
+    IMPORTING
+     SEL_VARIANT                = p_mb51
+*     SEL_VARIANT_TEXT           =
+*     CANCELLED                  =
+* TABLES
+*     BELONGING_DYNNR            =
+* EXCEPTIONS
+*     NO_REPORT                  = 1
+*     REPORT_NOT_EXISTENT        = 2
+*     REPORT_NOT_SUPPLIED        = 3
+*     NO_VARIANTS                = 4
+*     NO_VARIANT_SELECTED        = 5
+*     VARIANT_NOT_EXISTENT       = 6
+*     OTHERS = 7
+    .
+  IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+
+    MESSAGE ID sy-msgid TYPE 'S'
+                 NUMBER sy-msgno
+                 WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+  ENDIF.
+
+ENDFORM.
+
+
+*&---------------------------------------------------------------------*
+*&      Form  GET_LAYOUT
+*&---------------------------------------------------------------------*
+FORM GET_LAYOUT  USING    P_VAR.
+  gs_alv_variant-report = SY-CPROG.
+
+  CALL FUNCTION 'REUSE_ALV_VARIANT_F4'
+    EXPORTING
+      is_variant = gs_alv_variant
+      i_save     = 'A'
+    IMPORTING
+      es_variant = gs_alv_variant
+    EXCEPTIONS
+      not_found  = 2.
+  IF sy-subrc = 2.
+    MESSAGE ID sy-msgid TYPE 'S' NUMBER sy-msgno
+    WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+  ELSE.
+    p_var = gs_alv_variant-variant.
+  ENDIF.
+ENDFORM.

@@ -1,0 +1,31 @@
+*&---------------------------------------------------------------------*
+*& Report ZPP_CLASS_ALV
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZPP_MD07.
+INCLUDE ZPP_MD07_DATA.
+*include ZPP_CLASS_ALV_data.
+INCLUDE ZPP_MD07_SEL.
+*include ZPP_CLASS_ALV_sel.
+INCLUDE ZPP_MD07_CLS.
+*include ZPP_CLASS_ALV_cls.
+* Local class to
+** Get all data from MRP
+** Display in an ALV
+
+
+
+
+START-OF-SELECTION.
+
+  DATA(lo_MRP_alv) = NEW lcl_MRP_alv( ).
+
+* check authorizations
+  lo_MRP_alv->CHECK_AUTORIZATION( ).
+
+* Get all data from MRP
+  lo_MRP_alv->get_all_MRP_data( ).
+
+* Display the MRP data above in an alv
+  lo_MRP_alv->display_MRP_alv( ).

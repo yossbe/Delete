@@ -1,0 +1,108 @@
+*&---------------------------------------------------------------------*
+*&  Include           ZPP_CLASS_ALV_DATA
+*&---------------------------------------------------------------------*
+TABLES: marc, mkpf ,mara ,ekko ,aufk ,likp ,pgmi.
+TYPES: BEGIN OF t_mrp_add.
+
+TYPES: werks           LIKE marc-werks,
+       matnr           LIKE marc-matnr,
+       bstrf           LIKE marc-bstrf,
+       bstma           LIKE marc-bstma,
+       sfcpf           LIKE marc-sfcpf,
+       fevor           LIKE marc-fevor,
+       frtme           LIKE marc-frtme,
+       beskz           LIKE marc-beskz,
+       kzaus           LIKE marc-kzaus,
+       eislo           LIKE marc-eislo,
+       herkl           LIKE marc-herkl,
+       mmstd           LIKE marc-mmstd,
+       mmsta           LIKE marc-mmsta,
+       plifz           LIKE marc-plifz,
+       ausdt           LIKE marc-ausdt,
+       nfmat           LIKE marc-nfmat,
+       disls           LIKE marc-disls,
+       ekgrp           LIKE marc-ekgrp,
+       bstmi           LIKE marc-bstmi,
+       mabst           LIKE marc-mabst,
+       wzeit           LIKE marc-wzeit,
+       strgr           LIKE marc-strgr,
+       lgpro           LIKE marc-lgpro,
+       sobsl           LIKE marc-sobsl,
+       bstfe           LIKE marc-bstfe,
+       minbe           LIKE marc-minbe,
+       eisbe           LIKE marc-eisbe,
+       maabc           LIKE marc-maabc,
+       dismm           LIKE marc-dismm,
+       dispo           LIKE marc-dispo,
+       mtart           LIKE mara-mtart,               "material type
+       matkl           LIKE mara-matkl,               "Material group
+       wgbez           LIKE t023t-wgbez,              "Material group description
+       meins           LIKE mara-meins,
+       disst           LIKE mara-disst,               "Low-Level Code
+       maktx           LIKE makt-maktx,
+       prgrp           LIKE pgmi-prgrp,               "product group
+       planed_order    LIKE plaf-gsmng,
+       z_pir           LIKE pbed-plnmg,
+       z_po            LIKE ekpo-menge,
+       z_prod          LIKE afpo-psmng,
+       z_proc_order    LIKE afpo-psmng,
+       z_del           LIKE lips-lfimg,       "Actual quantity delivered (in sales units)
+       z_ordres        LIKE resb-bdmng,
+       z_depreq        LIKE resb-bdmng,
+       z_purrqs        LIKE eban-menge,
+       z_ord_ds        LIKE mdez-mng01,
+       z_shpgnt        LIKE mdez-mng01,
+       z_prqrel        LIKE mdez-mng01,
+       z_plorel        LIKE mdez-mng01,
+       z_qm_lot        LIKE mdez-mng01,
+       z_schagr        LIKE mdez-mng01,
+       z_return        LIKE mdez-mng01,
+       z_so            LIKE vbap-zmeng,
+       po_sch_agr      LIKE mdez-mng01,
+       subreq          LIKE mdez-mng01,           "	Subcontractor requirements of material provided / SubCnt req'
+       free_del        LIKE mdez-mng01,
+       z_fix_recp      LIKE mdez-mng01,
+       z_pln_recp      LIKE mdez-mng01,
+       z_fix_req       LIKE mdez-mng01,
+       z_pln_req       LIKE mdez-mng01,
+       z_tot_rec       LIKE mdez-mng01,
+       z_tot_req       LIKE mdez-mng01,
+       stock           LIKE mard-labst,
+       open_qty        LIKE mdez-mng01,
+       open_qty_fix    LIKE mdez-mng01,
+       open_qty_val    TYPE p LENGTH 8 DECIMALS 2,
+       av_st_minus_reo LIKE mdez-mng01,
+       free_stock      TYPE mdez-mng01,
+       ex_cancel       TYPE date,
+       ex_negative     TYPE date,
+       ex_sch_in       TYPE date,
+       ex_sch_out      TYPE date,
+
+       day_supply      LIKE mdkp-berw1,
+       day_supply_1    LIKE mdkp-berw2,
+       alv_color       TYPE lvc_t_scol,
+       history         TYPE char10.
+
+*       ratio type P LENGTH 8 DECIMALS 2.
+TYPES:END OF t_mrp_add.
+
+
+DATA: gs_alv_variant TYPE disvariant,
+      lo_layout      TYPE REF TO cl_salv_layout,
+      lo_selections  TYPE REF TO cl_salv_selections,
+      ls_key         TYPE        salv_s_layout_key.
+
+
+DATA: it_mdezx LIKE STANDARD TABLE OF mdez,
+      wa_mdezx LIKE LINE OF it_mdezx.
+DATA: it_mt61d LIKE STANDARD TABLE OF mt61d,
+      wa_mt61d LIKE LINE OF it_mt61d.
+DATA: it_mdsta LIKE STANDARD TABLE OF mdsta,
+      wa_mdsta LIKE LINE OF it_mdsta.
+DATA: it_mdkp LIKE STANDARD TABLE OF mdkp,
+      wa_mdkp LIKE LINE OF it_mdkp.
+DATA: seltab    TYPE TABLE OF rsparams,
+      seltab_wa LIKE LINE OF seltab.
+
+DATA: g_variant          LIKE disvariant.
+DATA: gx_variant         LIKE disvariant.
